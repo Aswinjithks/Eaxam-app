@@ -57,18 +57,20 @@ interface QuestionProps {
     type: string;
     question: string;
     options: string[];
+    subQuestions?: string[];
   };
   questionTime: number;
-  onAnswer: (questionId: number, answer: string | string[]) => void;
+  //: (questionId: number, answer: string | string[] | { [key: string]: string }) => void;
+  onAnswer: any;
   setCurrentQuestionIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const Question: React.FC<QuestionProps> = ({ question, questionTime, onAnswer, setCurrentQuestionIndex }) => {
-  const [selectedAnswer, setSelectedAnswer] = useState<string | string[]>('');
+  const [selectedAnswer, setSelectedAnswer] = useState<string | string[] | { [key: string]: string }>('');
   const [timeLeft, setTimeLeft] = useState(questionTime * 60);
   const [error, setError] = useState<null | string>(null);
 
-  const handleAnswerChange = (answer: string | string[]) => {
+  const handleAnswerChange = (answer: string | string[] | { [key: string]: string }) => {
     setSelectedAnswer(answer);
   };
 
@@ -77,14 +79,17 @@ const Question: React.FC<QuestionProps> = ({ question, questionTime, onAnswer, s
     if (question.type === 'multi-choice' && !selectedAnswer) {
       return setError('Please select an answer');
     }
-    if (question.type !== 'multi-choice' && (!Array.isArray(selectedAnswer) || selectedAnswer.length === 1)) {
+    if (question.type === 'optional' && (!Array.isArray(selectedAnswer) || selectedAnswer.length < 2)) {
       return setError('Please select 2 or more answers');
+    }
+    if (question.type === 'matrix' && Object.keys(selectedAnswer).length !== question.subQuestions?.length) {
+      return setError('Please complete all matches');
     }
     onAnswer(question.id, selectedAnswer);
   };
 
   useEffect(() => {
-    setSelectedAnswer('');
+    setSelectedAnswer(question.type === 'matrix' ? {} : '');
     setTimeLeft(questionTime * 60);
   }, [question]);
 
@@ -96,6 +101,7 @@ const Question: React.FC<QuestionProps> = ({ question, questionTime, onAnswer, s
       <QuestionOptions
         type={question.type}
         options={question.options}
+        subQuestions={question.subQuestions}
         selectedAnswer={selectedAnswer}
         onAnswerChange={handleAnswerChange}
       />
@@ -106,6 +112,7 @@ const Question: React.FC<QuestionProps> = ({ question, questionTime, onAnswer, s
 };
 
 export default Question;
+
 
 
 

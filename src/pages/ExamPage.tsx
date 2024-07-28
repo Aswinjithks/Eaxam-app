@@ -73,8 +73,12 @@ const ExamPage: React.FC = () => {
 
     const handleAnswer = (questionId: number, answer: string | string[]) => {
         const question = examData?.questions.find((q) => q.id === questionId);
+        console.log('question', question);
+
         if (examData && question) {
             const correctAnswer = question.type === 'multi-choice' ? question.answer : question.correctAnswers;
+            console.log(correctAnswer);
+
             setAnswers((prev) => [
                 ...prev,
                 {

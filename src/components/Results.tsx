@@ -2,16 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import { Result } from '../types';
 import { useNavigate } from 'react-router-dom';
-
-
+import { formatAnswer } from '@utils/functions';
 
 interface ResultProps {
-    answers: Result[];
-    numberOfQuestions: number;
-
+  answers: Result[];
+  numberOfQuestions: number;
 }
-
-
 
 const ResultsWrapper = styled.div`
   display: flex;
@@ -64,50 +60,50 @@ const StartButton = styled.button`
 `;
 
 const Results: React.FC<ResultProps> = ({ answers, numberOfQuestions }) => {
+  console.log("answers", answers);
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const correctAnswersCount = answers.filter((answer) => {
-        if (Array.isArray(answer.userAnswer)) {
-            return answer.userAnswer.sort().toString() === (answer.correctAnswer as string[]).sort().toString();
-        }
-        return answer.userAnswer === answer.correctAnswer;
-    }).length;
+  const compareAnswers = (userAnswer: string | string[] | { [key: string]: string }, correctAnswer: string | string[] | { [key: string]: string }) => {
+    if (typeof userAnswer === 'object' && typeof correctAnswer === 'object' && !Array.isArray(userAnswer) && !Array.isArray(correctAnswer)) {
+      return Object.keys(userAnswer).every(key => userAnswer[key] === correctAnswer[key]);
+    }
+    if (Array.isArray(userAnswer) && Array.isArray(correctAnswer)) {
+      return userAnswer.sort().toString() === correctAnswer.sort().toString();
+    }
+    return userAnswer === correctAnswer;
+  };
 
-    const compareAnswers = (userAnswer: string | string[], correctAnswer: string | string[]) => {
-        if (Array.isArray(userAnswer) && Array.isArray(correctAnswer)) {
-            return userAnswer.sort().toString() === correctAnswer.sort().toString();
-        }
-        return userAnswer === correctAnswer;
-    };
+  const correctAnswersCount = answers.filter((answer) => compareAnswers(answer.userAnswer, answer.correctAnswer)).length;
 
+  return (
+    <ResultsWrapper>
+      <h2>Results</h2>
+      <p>You have answered {answers.length} out of {numberOfQuestions} questions.</p>
+      <p>Your score is {correctAnswersCount}</p>
 
-    return (
-        <ResultsWrapper>
-            <h2>Results</h2>
-            <p>You have answered {answers.length} out of {numberOfQuestions} questions.</p>
-            <p>You'r score is {correctAnswersCount}</p>
-
-            {answers.map((answer, index) => (
-                <ResultItem key={index}>
-                    <p>Question {answer.questionId}</p>
-                    <p>
-                        Your Answer: {Array.isArray(answer.userAnswer) ? answer.userAnswer.join(', ') : answer.userAnswer} <br />
-                        Correct Answer: {Array.isArray(answer.correctAnswer) ? (answer.correctAnswer as string[]).join(', ') : answer.correctAnswer}
-                    </p>
-                    <p>
-                        {compareAnswers(answer.userAnswer, answer.correctAnswer)
-                            ? <CorrectAnswer>Correct</CorrectAnswer>
-                            : <IncorrectAnswer>Incorrect</IncorrectAnswer>}
-                    </p>
-                </ResultItem>
-            ))}
-            <StartButton onClick={() => navigate('/')}>Back to Home</StartButton>
-        </ResultsWrapper>
-    );
+      {answers.map((answer, index) => (
+        <ResultItem key={index}>
+          <p>Question {answer.questionId}</p>
+          <p>
+            Your Answer: {formatAnswer(answer.userAnswer)} <br />
+            Correct Answer: {formatAnswer(answer.correctAnswer)}
+          </p>
+          <p>
+            {compareAnswers(answer.userAnswer, answer.correctAnswer)
+              ? <CorrectAnswer>Correct</CorrectAnswer>
+              : <IncorrectAnswer>Incorrect</IncorrectAnswer>}
+          </p>
+        </ResultItem>
+      ))}
+      <StartButton onClick={() => navigate('/')}>Back to Home</StartButton>
+    </ResultsWrapper>
+  );
 };
 
 export default Results;
+
+
 
 
 

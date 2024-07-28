@@ -1,5 +1,3 @@
-// src/types.ts
-
 export interface Question {
     id: number;
     type: 'multi-choice' | 'optional';
@@ -18,6 +16,6 @@ export interface ExamData {
 
 export interface Result {
     questionId: number;
-    userAnswer: string | string[];
-    correctAnswer: string | string[];
+    userAnswer: string | string[] | { [key: string]: string };
+    correctAnswer: string | string[] | { [key: string]: string };
 }

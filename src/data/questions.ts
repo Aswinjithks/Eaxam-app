@@ -1,5 +1,5 @@
 export const EXAM_DATA = {
-    examTime: 10,
+    examTime: 5,
     questionTime: 0.5,
     questions: [
         {
@@ -11,17 +11,29 @@ export const EXAM_DATA = {
         },
         {
             id: 2,
-            type: 'multi-choice',
-            question: 'Which planet is known as the Red Planet?',
-            options: ['Earth', 'Mars', 'Jupiter', 'Saturn'],
-            answer: 'Mars',
+            type: 'matrix',
+            question: 'Match the following scientists with their discoveries.',
+            subQuestions: ['Marie Curie', 'Isaac Newton', 'Alexander Fleming', 'Albert Einstein'],
+            options: ['Radioactivity', 'Laws of Motion', 'Penicillin', 'Theory of Relativity'],
+            correctAnswers: {
+                'Marie Curie': 'Radioactivity',
+                'Isaac Newton': 'Laws of Motion',
+                'Alexander Fleming': 'Penicillin',
+                'Albert Einstein': 'Theory of Relativity',
+            },
         },
         {
             id: 3,
-            type: 'multi-choice',
-            question: 'Who wrote "To Kill a Mockingbird"?',
-            options: ['Harper Lee', 'Mark Twain', 'J.K. Rowling', 'Ernest Hemingway'],
-            answer: 'Harper Lee',
+            type: 'matrix',
+            question: 'Match the following countries with their capitals.',
+            subQuestions: ['France', 'Japan', 'Germany', 'Brazil'],
+            options: ['Paris', 'Tokyo', 'Berlin', 'Brasilia'],
+            correctAnswers: {
+                'France': 'Paris',
+                'Japan': 'Tokyo',
+                'Germany': 'Berlin',
+                'Brazil': 'Brasilia',
+            },
         },
         {
             id: 4,
