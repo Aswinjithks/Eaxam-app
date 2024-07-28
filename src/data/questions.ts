@@ -1,17 +1,13 @@
-
-
-
-
 export const EXAM_DATA = {
-    examTime: 20,
-    questionTime: 1,
+    examTime: 10,
+    questionTime: 0.5,
     questions: [
         {
             id: 1,
-            type: 'multi-choice',
-            question: 'What is the capital of France?',
-            options: ['Paris', 'London', 'Berlin', 'Madrid'],
-            answer: 'Paris',
+            type: 'optional',
+            question: 'Which of the following are programming languages?',
+            options: ['Python', 'HTML', 'CSS', 'JavaScript'],
+            correctAnswers: ['Python', 'JavaScript'],
         },
         {
             id: 2,
@@ -29,10 +25,10 @@ export const EXAM_DATA = {
         },
         {
             id: 4,
-            type: 'multi-choice',
-            question: 'What is the chemical symbol for water?',
-            options: ['O2', 'H2O', 'CO2', 'NaCl'],
-            answer: 'H2O',
+            type: 'optional',
+            question: 'Select the primary colors.',
+            options: ['Red', 'Green', 'Blue', 'Yellow'],
+            correctAnswers: ['Red', 'Blue', 'Yellow'],
         },
         {
             id: 5,
@@ -50,32 +46,103 @@ export const EXAM_DATA = {
         },
         {
             id: 7,
+            type: 'optional',
+            question: 'Which of the following are mammals?',
+            options: ['Whale', 'Shark', 'Dolphin', 'Octopus'],
+            correctAnswers: ['Whale', 'Dolphin'],
+        },
+        {
+            id: 8,
+            type: 'multi-choice',
+            question: 'What is the boiling point of water?',
+            options: ['90°C', '100°C', '110°C', '120°C'],
+            answer: '100°C',
+        },
+        {
+            id: 9,
             type: 'multi-choice',
             question: 'Who painted the Mona Lisa?',
             options: ['Vincent van Gogh', 'Pablo Picasso', 'Leonardo da Vinci', 'Claude Monet'],
             answer: 'Leonardo da Vinci',
         },
         {
-            id: 8,
+            id: 10,
             type: 'multi-choice',
             question: 'What is the capital of Japan?',
             options: ['Seoul', 'Tokyo', 'Beijing', 'Bangkok'],
             answer: 'Tokyo',
         },
         {
-            id: 9,
+            id: 11,
             type: 'multi-choice',
             question: 'What is the hardest natural substance on Earth?',
             options: ['Gold', 'Iron', 'Diamond', 'Platinum'],
             answer: 'Diamond',
         },
         {
-            id: 10,
+            id: 12,
+            type: 'optional',
+            question: 'Which countries are in Europe?',
+            options: ['France', 'China', 'Brazil', 'Germany'],
+            correctAnswers: ['France', 'Germany'],
+        },
+        {
+            id: 13,
             type: 'multi-choice',
             question: 'Who discovered penicillin?',
             options: ['Marie Curie', 'Isaac Newton', 'Alexander Fleming', 'Albert Einstein'],
             answer: 'Alexander Fleming',
         },
+        {
+            id: 14,
+            type: 'optional',
+            question: 'Which of the following are operating systems?',
+            options: ['Windows', 'Linux', 'MacOS', 'Photoshop'],
+            correctAnswers: ['Windows', 'Linux', 'MacOS'],
+        },
+        {
+            id: 15,
+            type: 'multi-choice',
+            question: 'What is the tallest mountain in the world?',
+            options: ['K2', 'Kangchenjunga', 'Lhotse', 'Everest'],
+            answer: 'Everest',
+        },
+        {
+            id: 16,
+            type: 'optional',
+            question: 'Which of the following are web browsers?',
+            options: ['Chrome', 'Firefox', 'Safari', 'Windows'],
+            correctAnswers: ['Chrome', 'Firefox', 'Safari'],
+        },
+        {
+            id: 17,
+            type: 'multi-choice',
+            question: 'What is the capital of France?',
+            options: ['Paris', 'London', 'Berlin', 'Madrid'],
+            answer: 'Paris',
+        },
+        {
+            id: 18,
+            type: 'multi-choice',
+            question: 'Who is the author of "1984"?',
+            options: ['George Orwell', 'Aldous Huxley', 'Ray Bradbury', 'J.R.R. Tolkien'],
+            answer: 'George Orwell',
+        },
+        {
+            id: 19,
+            type: 'multi-choice',
+            question: 'What is the chemical symbol for water?',
+            options: ['O2', 'H2O', 'CO2', 'NaCl'],
+            answer: 'H2O',
+        },
+        {
+            id: 20,
+            type: 'multi-choice',
+            question: 'Who developed the theory of relativity?',
+            options: ['Isaac Newton', 'Albert Einstein', 'Galileo Galilei', 'Niels Bohr'],
+            answer: 'Albert Einstein',
+        }
     ],
     mode: 'normal',
 };
+

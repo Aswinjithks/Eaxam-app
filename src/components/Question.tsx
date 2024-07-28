@@ -59,23 +59,26 @@ interface QuestionProps {
     options: string[];
   };
   questionTime: number;
-  onAnswer: (questionId: number, answer: string) => void;
+  onAnswer: (questionId: number, answer: string | string[]) => void;
   setCurrentQuestionIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const Question: React.FC<QuestionProps> = ({ question, questionTime, onAnswer, setCurrentQuestionIndex }) => {
-  const [selectedAnswer, setSelectedAnswer] = useState<string>('');
+  const [selectedAnswer, setSelectedAnswer] = useState<string | string[]>('');
   const [timeLeft, setTimeLeft] = useState(questionTime * 60);
   const [error, setError] = useState<null | string>(null);
 
-  const handleAnswerChange = (answer: string) => {
+  const handleAnswerChange = (answer: string | string[]) => {
     setSelectedAnswer(answer);
   };
 
   const handleSubmit = () => {
     setError(null);
-    if (!selectedAnswer) {
+    if (question.type === 'multi-choice' && !selectedAnswer) {
       return setError('Please select an answer');
+    }
+    if (question.type !== 'multi-choice' && (!Array.isArray(selectedAnswer) || selectedAnswer.length === 1)) {
+      return setError('Please select 2 or more answers');
     }
     onAnswer(question.id, selectedAnswer);
   };
@@ -87,7 +90,8 @@ const Question: React.FC<QuestionProps> = ({ question, questionTime, onAnswer, s
 
   return (
     <QuestionWrapper>
-      <QuestionTimer  setTimeLeft={setTimeLeft} timeLeft={timeLeft} setCurrentQuestionIndex={setCurrentQuestionIndex} />
+      <h5>Question {question.id}</h5>
+      <QuestionTimer setTimeLeft={setTimeLeft} timeLeft={timeLeft} setCurrentQuestionIndex={setCurrentQuestionIndex} />
       <QuestionText>{question.question}</QuestionText>
       <QuestionOptions
         type={question.type}
@@ -102,5 +106,6 @@ const Question: React.FC<QuestionProps> = ({ question, questionTime, onAnswer, s
 };
 
 export default Question;
+
 
 

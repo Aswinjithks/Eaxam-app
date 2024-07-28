@@ -6,6 +6,10 @@ const OptionsWrapper = styled.div`
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   margin-top: 20px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const OptionLabel = styled.label`
@@ -30,13 +34,28 @@ const Input = styled.input`
 interface QuestionOptionsProps {
   type: string;
   options: string[];
-  selectedAnswer: string;
-  onAnswerChange: (answer: string) => void;
+  selectedAnswer: string | string[];
+  onAnswerChange: (answer: string | string[]) => void;
 }
 
 const QuestionOptions: React.FC<QuestionOptionsProps> = ({ type, options, selectedAnswer, onAnswerChange }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onAnswerChange(e.target.value);
+    const value = e.target.value;
+    if (type === 'multi-choice') {
+      onAnswerChange(value);
+    } else {
+      let newSelectedAnswers: string[];
+      if (Array.isArray(selectedAnswer)) {
+        if (selectedAnswer.includes(value)) {
+          newSelectedAnswers = selectedAnswer.filter((answer) => answer !== value);
+        } else {
+          newSelectedAnswers = [...selectedAnswer, value];
+        }
+      } else {
+        newSelectedAnswers = [value];
+      }
+      onAnswerChange(newSelectedAnswers);
+    }
   };
 
   return (
@@ -45,9 +64,13 @@ const QuestionOptions: React.FC<QuestionOptionsProps> = ({ type, options, select
         <OptionLabel key={index}>
           <Input
             type={type === 'multi-choice' ? 'radio' : 'checkbox'}
-            name="option"
+            name="options"
             value={option}
-            checked={selectedAnswer === option}
+            checked={
+              type === 'multi-choice'
+                ? selectedAnswer === option
+                : Array.isArray(selectedAnswer) && selectedAnswer.includes(option)
+            }
             onChange={handleChange}
           />
           {option}
@@ -58,3 +81,4 @@ const QuestionOptions: React.FC<QuestionOptionsProps> = ({ type, options, select
 };
 
 export default QuestionOptions;
+

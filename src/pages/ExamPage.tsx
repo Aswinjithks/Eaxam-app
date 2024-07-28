@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import axios from '@utils/fakeAPI';
+import ExamTimer from '@components/ExamTimer';
+import Question from '@components/Question';
+import Results from '@components/Results';
+import { ExamData, Result } from '../types';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import axios from '../utils/fakeAPI';
-import ExamTimer from '../components/ExamTimer';
-import Question from '../components/Question';
-import Results from '../components/Results';
-import { capitalizeFirstLetter } from '../utils/functions';
 
 const ExamWrapper = styled.div`
   display: flex;
@@ -26,12 +27,10 @@ const ContentWrapper = styled.div`
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
   margin: 10px;
-    @media (max-width: 600px) {
+  @media (max-width: 600px) {
     background: none;
   }
 `;
-
-
 
 const LoadingWrapper = styled.div`
   display: flex;
@@ -43,31 +42,10 @@ const LoadingWrapper = styled.div`
   color: #fff;
 `;
 
-interface Question {
-    id: number;
-    type: string;
-    question: string;
-    options: string[];
-    answer: string;
-}
-
-interface ExamData {
-    examTime: number;
-    questionTime: number;
-    questions: Question[];
-    mode: string;
-}
-
-interface Answer {
-    questionId: number;
-    userAnswer: string;
-    correctAnswer: string;
-}
-
 const ExamPage: React.FC = () => {
     const [examData, setExamData] = useState<ExamData | null>(null);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [answers, setAnswers] = useState<Answer[]>([]);
+    const [answers, setAnswers] = useState<Result[]>([]);
     const [showResults, setShowResults] = useState(false);
 
     useEffect(() => {
@@ -78,15 +56,31 @@ const ExamPage: React.FC = () => {
         fetchExamData();
     }, []);
 
-    const handleAnswer = (questionId: number, answer: string) => {
+    useEffect(() => {
+        const handlePopState = (event: PopStateEvent) => {
+            window.history.pushState(null, document.title, window.location.href);
+            toast.warning('You cannot go back during the exam');
+        };
+
+        window.history.pushState(null, document.title, window.location.href);
+        window.addEventListener('popstate', handlePopState);
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, []);
+
+
+    const handleAnswer = (questionId: number, answer: string | string[]) => {
         const question = examData?.questions.find((q) => q.id === questionId);
         if (examData && question) {
+            const correctAnswer = question.type === 'multi-choice' ? question.answer : question.correctAnswers;
             setAnswers((prev) => [
                 ...prev,
                 {
                     questionId,
                     userAnswer: answer,
-                    correctAnswer: question.answer,
+                    correctAnswer: correctAnswer || '',
                 },
             ]);
 
@@ -105,10 +99,9 @@ const ExamPage: React.FC = () => {
     return (
         <ExamWrapper>
             <ContentWrapper>
-                <h4>Mode:{capitalizeFirstLetter(examData.mode)}</h4>
-                {!showResults && <ExamTimer duration={examData.examTime} />}
+                {!showResults && <ExamTimer duration={examData.examTime} setShowResults={setShowResults} />}
                 {showResults ? (
-                    <Results answers={answers} />
+                    <Results answers={answers} numberOfQuestions={examData.questions.length} />
                 ) : (
                     <Question
                         question={examData.questions[currentQuestionIndex]}
@@ -123,5 +116,12 @@ const ExamPage: React.FC = () => {
 };
 
 export default ExamPage;
+
+
+
+
+
+
+
 
 
