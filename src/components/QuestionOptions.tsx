@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-
+import MatrixTable from './MatrixTable';
 const OptionsWrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -31,30 +31,16 @@ const Input = styled.input`
   margin-right: 10px;
 `;
 
-const MatrixWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 20px;
-
-  @media (max-width: 600px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const MatrixRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  align-items: center;
-`;
+interface MatrixAnswer {
+  [key: string]: string;
+}
 
 interface QuestionOptionsProps {
   type: string;
   options: string[];
   subQuestions?: string[];
-  selectedAnswer: string | string[] | { [key: string]: string };
-  onAnswerChange: (answer: string | string[] | { [key: string]: string }) => void;
+  selectedAnswer: string | string[] | MatrixAnswer;
+  onAnswerChange: (answer: string | string[] | MatrixAnswer) => void;
 }
 
 const QuestionOptions: React.FC<QuestionOptionsProps> = ({
@@ -64,56 +50,14 @@ const QuestionOptions: React.FC<QuestionOptionsProps> = ({
   selectedAnswer,
   onAnswerChange,
 }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const value = e.target.value;
-    if (type === 'multi-choice') {
-      onAnswerChange(value);
-    } else if (type === 'optional') {
-      let newSelectedAnswers: string[];
-      if (Array.isArray(selectedAnswer)) {
-        if (selectedAnswer.includes(value)) {
-          newSelectedAnswers = selectedAnswer.filter((answer) => answer !== value);
-        } else {
-          newSelectedAnswers = [...selectedAnswer, value];
-        }
-      } else {
-        newSelectedAnswers = [value];
-      }
-      onAnswerChange(newSelectedAnswers);
-    } else if (type === 'matrix') {
-      const { name } = e.target;
-      if (typeof selectedAnswer === 'object' && !Array.isArray(selectedAnswer)) {
-        onAnswerChange({
-          ...selectedAnswer,
-          [name]: value,
-        });
-      } else {
-        onAnswerChange({ [name]: value });
-      }
-    }
-  };
-
   if (type === 'matrix') {
     return (
-      <MatrixWrapper>
-        {subQuestions.map((subQuestion, subIndex) => (
-          <MatrixRow key={subIndex}>
-            <span>{subQuestion}</span>
-            <select
-              name={subQuestion}
-              value={(selectedAnswer as { [key: string]: string })[subQuestion] || ''}
-              onChange={handleChange}
-            >
-              <option value="" disabled>Select an option</option>
-              {options.map((option, index) => (
-                <option key={index} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </MatrixRow>
-        ))}
-      </MatrixWrapper>
+      <MatrixTable
+        options={options}
+        subQuestions={subQuestions}
+        selectedAnswer={selectedAnswer as MatrixAnswer}
+        onAnswerChange={onAnswerChange}
+      />
     );
   }
 
@@ -130,7 +74,24 @@ const QuestionOptions: React.FC<QuestionOptionsProps> = ({
                 ? selectedAnswer === option
                 : Array.isArray(selectedAnswer) && selectedAnswer.includes(option)
             }
-            onChange={handleChange}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (type === 'multi-choice') {
+                onAnswerChange(value);
+              } else if (type === 'optional') {
+                let newSelectedAnswers: string[];
+                if (Array.isArray(selectedAnswer)) {
+                  if (selectedAnswer.includes(value)) {
+                    newSelectedAnswers = selectedAnswer.filter((answer) => answer !== value);
+                  } else {
+                    newSelectedAnswers = [...selectedAnswer, value];
+                  }
+                } else {
+                  newSelectedAnswers = [value];
+                }
+                onAnswerChange(newSelectedAnswers);
+              }
+            }}
           />
           {option}
         </OptionLabel>

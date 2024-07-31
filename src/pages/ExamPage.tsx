@@ -43,80 +43,83 @@ const LoadingWrapper = styled.div`
 `;
 
 const ExamPage: React.FC = () => {
-    const [examData, setExamData] = useState<ExamData | null>(null);
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [answers, setAnswers] = useState<Result[]>([]);
-    const [showResults, setShowResults] = useState(false);
+  const [examData, setExamData] = useState<ExamData | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState<Result[]>([]);
+  const [showResults, setShowResults] = useState(false);
 
-    useEffect(() => {
-        const fetchExamData = async () => {
-            const response = await axios.get('/exam');
-            setExamData(response.data);
-        };
-        fetchExamData();
-    }, []);
+  useEffect(() => {
+    const fetchExamData = async () => {
+      const response = await axios.get('/exam');
+      setExamData(response.data);
+    };
+    fetchExamData();
+  }, []);
 
-    useEffect(() => {
-        const handlePopState = (event: PopStateEvent) => {
-            window.history.pushState(null, document.title, window.location.href);
-            toast.warning('You cannot go back during the exam');
-        };
-
-        window.history.pushState(null, document.title, window.location.href);
-        window.addEventListener('popstate', handlePopState);
-
-        return () => {
-            window.removeEventListener('popstate', handlePopState);
-        };
-    }, []);
-
-
-    const handleAnswer = (questionId: number, answer: string | string[]) => {
-        const question = examData?.questions.find((q) => q.id === questionId);
-        console.log('question', question);
-
-        if (examData && question) {
-            const correctAnswer = question.type === 'multi-choice' ? question.answer : question.correctAnswers;
-            console.log(correctAnswer);
-
-            setAnswers((prev) => [
-                ...prev,
-                {
-                    questionId,
-                    userAnswer: answer,
-                    correctAnswer: correctAnswer || '',
-                },
-            ]);
-
-            if (currentQuestionIndex < examData.questions.length - 1) {
-                setCurrentQuestionIndex((prev) => prev + 1);
-            } else {
-                setShowResults(true);
-            }
-        }
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      window.history.pushState(null, document.title, window.location.href);
+      toast.warning('You cannot go back during the exam');
     };
 
-    if (!examData) {
-        return <LoadingWrapper>Loading...</LoadingWrapper>;
-    }
+    window.history.pushState(null, document.title, window.location.href);
+    window.addEventListener('popstate', handlePopState);
 
-    return (
-        <ExamWrapper>
-            <ContentWrapper>
-                {!showResults && <ExamTimer duration={examData.examTime} setShowResults={setShowResults} />}
-                {showResults ? (
-                    <Results answers={answers} numberOfQuestions={examData.questions.length} />
-                ) : (
-                    <Question
-                        question={examData.questions[currentQuestionIndex]}
-                        questionTime={examData.questionTime}
-                        onAnswer={handleAnswer}
-                        setCurrentQuestionIndex={setCurrentQuestionIndex}
-                    />
-                )}
-            </ContentWrapper>
-        </ExamWrapper>
-    );
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+
+  const handleAnswer = (questionId: number, answer: string | string[]) => {
+    const question = examData?.questions.find((q) => q.id === questionId);
+    console.log('question', question);
+
+    if (examData && question) {
+      const correctAnswer = question.type === 'multi-choice' ? question.answer : question.correctAnswers;
+      console.log(correctAnswer);
+
+      setAnswers((prev) => [
+        ...prev,
+        {
+          questionId,
+          userAnswer: answer,
+          correctAnswer: correctAnswer || '',
+        },
+      ]);
+
+      if (currentQuestionIndex < examData.questions.length - 1) {
+        setCurrentQuestionIndex((prev) => prev + 1);
+      } else {
+        setShowResults(true);
+      }
+    }
+  };
+
+  if (!examData) {
+    return <LoadingWrapper>Loading...</LoadingWrapper>;
+  }
+
+  return (
+    <ExamWrapper>
+      <ContentWrapper>
+        {!showResults && <ExamTimer duration={examData.examTime} setShowResults={setShowResults} />}
+        {showResults ? (
+          <Results answers={answers} numberOfQuestions={examData.questions.length} />
+        ) : (
+          <Question
+            question={examData.questions[currentQuestionIndex]}
+            questionTime={examData.questionTime}
+            onAnswer={handleAnswer}
+            setCurrentQuestionIndex={setCurrentQuestionIndex}
+            currentQuestionIndex={currentQuestionIndex}
+            questionsLength={examData.questions.length}
+            setShowResults={setShowResults}
+          />
+        )}
+      </ContentWrapper>
+    </ExamWrapper>
+  );
 };
 
 export default ExamPage;

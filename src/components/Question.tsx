@@ -63,9 +63,12 @@ interface QuestionProps {
   //: (questionId: number, answer: string | string[] | { [key: string]: string }) => void;
   onAnswer: any;
   setCurrentQuestionIndex: React.Dispatch<React.SetStateAction<number>>;
+  currentQuestionIndex: number;
+  questionsLength: number;
+  setShowResults: (showResults: boolean) => void;
 }
 
-const Question: React.FC<QuestionProps> = ({ question, questionTime, onAnswer, setCurrentQuestionIndex }) => {
+const Question: React.FC<QuestionProps> = ({ question, questionTime, onAnswer, setCurrentQuestionIndex, currentQuestionIndex, setShowResults, questionsLength }) => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | string[] | { [key: string]: string }>('');
   const [timeLeft, setTimeLeft] = useState(questionTime * 60);
   const [error, setError] = useState<null | string>(null);
@@ -88,6 +91,14 @@ const Question: React.FC<QuestionProps> = ({ question, questionTime, onAnswer, s
     onAnswer(question.id, selectedAnswer);
   };
 
+
+  useEffect(() => {
+    if (timeLeft === 0 && currentQuestionIndex === questionsLength - 1) {
+      setShowResults(true);
+    }
+  }, [timeLeft, currentQuestionIndex, questionsLength]); 
+  
+
   useEffect(() => {
     setSelectedAnswer(question.type === 'matrix' ? {} : '');
     setTimeLeft(questionTime * 60);
@@ -95,13 +106,13 @@ const Question: React.FC<QuestionProps> = ({ question, questionTime, onAnswer, s
 
   return (
     <QuestionWrapper>
-      <h5>Question {question.id}</h5>
+      <h5>Question {currentQuestionIndex + 1}</h5>
       <QuestionTimer setTimeLeft={setTimeLeft} timeLeft={timeLeft} setCurrentQuestionIndex={setCurrentQuestionIndex} />
       <QuestionText>{question.question}</QuestionText>
       <QuestionOptions
-        type={question.type}
-        options={question.options}
-        subQuestions={question.subQuestions}
+        type={question?.type}
+        options={question?.options}
+        subQuestions={question?.subQuestions}
         selectedAnswer={selectedAnswer}
         onAnswerChange={handleAnswerChange}
       />
