@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import QuestionTimer from './QuestionTimer';
 import QuestionOptions from './QuestionOptions';
+import { toast } from 'react-toastify';
 
 const QuestionWrapper = styled.div`
   display: flex;
@@ -95,6 +96,7 @@ const Question: React.FC<QuestionProps> = ({ question, questionTime, onAnswer, s
   useEffect(() => {
     if (timeLeft === 0 && currentQuestionIndex === questionsLength - 1) {
       setShowResults(true);
+      toast.warn('Exam finished');
     }
   }, [timeLeft, currentQuestionIndex, questionsLength]); 
   
