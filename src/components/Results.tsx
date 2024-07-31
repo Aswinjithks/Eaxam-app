@@ -60,8 +60,6 @@ const StartButton = styled.button`
 `;
 
 const Results: React.FC<ResultProps> = ({ answers, numberOfQuestions }) => {
-  console.log("answers", answers);
-
   const navigate = useNavigate();
 
   const compareAnswers = (userAnswer: string | string[] | { [key: string]: string }, correctAnswer: string | string[] | { [key: string]: string }) => {
